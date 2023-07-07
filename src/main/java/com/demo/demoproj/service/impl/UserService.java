@@ -1,4 +1,4 @@
-package com.demo.demoproj.service;
+package com.demo.demoproj.service.impl;
 
 import java.util.Optional;
 import com.demo.demoproj.model.UserItem;
@@ -11,9 +11,12 @@ import reactor.core.publisher.Mono;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
 
     @Autowired
-    UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+    }
 
     public Flux<UserItem> findAll() {
         return userRepository.findAll();

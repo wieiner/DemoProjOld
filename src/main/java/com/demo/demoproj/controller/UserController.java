@@ -1,6 +1,6 @@
-package controller;
+package com.demo.demoproj.controller;
 
-import com.demo.demoproj.service.UserService;
+import com.demo.demoproj.service.impl.UserService;
 import com.demo.demoproj.model.UserItem;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
         import reactor.core.publisher.Flux;
         import reactor.core.publisher.Mono;
 
-@CrossOrigin(origins = "http://localhost:8081")
+//@CrossOrigin(origins = "http://localhost:8081")
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 public class UserController {
 
     @Autowired
