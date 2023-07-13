@@ -1,18 +1,16 @@
 package com.demo.demoproj.service.impl;
 
-import java.util.Objects;
-
+import com.demo.demoproj.repository.UserRepository;
 import com.demo.demoproj.repository.model.UserItem;
+import com.demo.demoproj.service.UserService;
 import com.demo.demoproj.service.exception.UserNotFoundException;
 import com.demo.demoproj.service.model.UserItemDTO;
-import com.demo.demoproj.repository.UserRepository;
-import com.demo.demoproj.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserItemDTO> findByPassword(String password) {
         return userRepository.findByPassword(password)
-                .map(s -> conversionService.convert(s, UserItemDTO.class));
+                .mapNotNull(s -> conversionService.convert(s, UserItemDTO.class));
     }
 
     @Override
@@ -45,20 +43,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<UserItemDTO> save(UserItemDTO userItemDTO) {
-        return Mono.just(Objects.requireNonNull(conversionService.convert(
-                userRepository.save(conversionService.convert(userItemDTO, UserItem.class)),
-                UserItemDTO.class)));
+        return Mono.justOrEmpty(conversionService.convert(userItemDTO, UserItem.class))
+                .flatMap(userItem -> userRepository.save(userItem)
+                        .mapNotNull(userItemFetch -> conversionService.convert(userItemFetch, UserItemDTO.class)));
+    }
 
+    public Mono<UserItemDTO> save2(UserItemDTO userItemDTO) {
+        UserItem userItem = conversionService.convert(userItemDTO, UserItem.class);
+        return userRepository.save(userItem)
+                .mapNotNull(userItemFetch -> conversionService.convert(userItemFetch, UserItemDTO.class));
     }
 
     @Override
     public Mono<UserItemDTO> update(String id, UserItemDTO userItemDTO) {
+
         return userRepository.findById(id)
                 .flatMap(s -> {
                     s.setUsername(userItemDTO.getUsername());
                     s.setPassword(userItemDTO.getPassword());
-                    return Mono.just(Objects.requireNonNull(
-                            conversionService.convert(userRepository.save(s), UserItemDTO.class)));
+                    return userRepository.save(s)
+                            .mapNotNull(userItem ->  conversionService.convert(userItem, UserItemDTO.class));
                 });
     }
 

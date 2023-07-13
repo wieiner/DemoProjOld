@@ -7,13 +7,9 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserItemConverter implements Converter<UserItem, UserItemDTO> {
-
-
+public class UserItemToUserItemDTOConverter implements Converter<UserItemDTO, UserItem> {
     @Override
-    public UserItemDTO convert(@NotNull UserItem from) {
-        return new UserItemDTO(from.getId(), from.getUsername(), from.getPassword());
+    public UserItem convert(@NotNull UserItemDTO from) {
+        return new UserItem(from.getId(), from.getUsername(), from.getPassword());
     }
-
-
 }

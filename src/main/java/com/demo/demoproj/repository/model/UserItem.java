@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
 @AllArgsConstructor
@@ -13,6 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UserItem {
     @Id
     private String id;
+    @Field("username")
     private String username;
+    @Field("password")
     private String password;
 }
